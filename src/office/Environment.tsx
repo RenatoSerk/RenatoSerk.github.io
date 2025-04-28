@@ -5,7 +5,7 @@ const Floor: React.FC = () => {
   useBox(() => ({
     type: "Static",
     position: [0, -0.5, 0],
-    args: [30, 1, 30], // width, height (thickness), depth
+    args: [30, 1, 30],
   }));
 
   return (
@@ -16,22 +16,23 @@ const Floor: React.FC = () => {
   );
 };
 
-// Static wall component
-const Wall: React.FC<{ position: [number, number, number]; rotation?: [number, number, number] }> = ({
-  position,
-  rotation = [0, 0, 0],
-}) => {
+
+const Wall: React.FC<{
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  color?: string;
+}> = ({ position, rotation = [0, 0, 0], color = "#cccccc" }) => { 
   useBox(() => ({
     type: "Static",
     position,
     rotation,
-    args: [30, 10, 1], // width, height, depth thickness of the wall
+    args: [30, 10, 1],
   }));
 
   return (
     <mesh position={position} rotation={rotation}>
       <boxGeometry args={[30, 10, 1]} />
-      <meshStandardMaterial color="#cccccc" />
+      <meshStandardMaterial color={color} />
     </mesh>
   );
 };
