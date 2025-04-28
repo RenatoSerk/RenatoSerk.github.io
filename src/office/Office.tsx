@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import { Physics } from "@react-three/cannon";
-import { Floor, Wall } from "./Environment";
+import { Floor, Wall } from "./ObjectModels";
 import Player from "./Player";
 
-export const OfficeScene: React.FC = () => {
+export const Office: React.FC = () => {
 
   return (
     <Canvas gl={{ antialias: true }} style={{ background: "ivory" }}>
@@ -28,4 +28,4 @@ export const OfficeScene: React.FC = () => {
   );
 };
 
-export default OfficeScene;
+export default Office;
