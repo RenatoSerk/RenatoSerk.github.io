@@ -1,36 +1,39 @@
-import { usePlane } from "@react-three/cannon";
+import { useBox } from "@react-three/cannon";
 
 // Static floor component
 const Floor: React.FC = () => {
-    usePlane(() => ({
-      rotation: [-Math.PI / 2, 0, 0], // Horizontal plane
-      position: [0, -0.5, 0],
-    }));
-  
-    return (
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]}>
-        <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color="rgb(222,184,135)" />
-      </mesh>
-    );
-  };
-  
-  // Static wall component
-  const Wall: React.FC<{ position: [number, number, number]; rotation?: [number, number, number] }> = ({
-    position,
-    rotation = [0, 0, 0],
-  }) => {
-    usePlane(() => ({
-      position,
-      rotation,
-    }));
-  
-    return (
-      <mesh position={position} rotation={rotation}>
-        <planeGeometry args={[30, 10]} />
-        <meshStandardMaterial color="#cccccc" />
-      </mesh>
-    );
-  };
+  useBox(() => ({
+    type: "Static",
+    position: [0, -0.5, 0],
+    args: [30, 1, 30], // width, height (thickness), depth
+  }));
 
-  export { Floor, Wall };
+  return (
+    <mesh position={[0, -0.5, 0]}>
+      <boxGeometry args={[30, 1, 30]} />
+      <meshStandardMaterial color="rgb(222,184,135)" />
+    </mesh>
+  );
+};
+
+// Static wall component
+const Wall: React.FC<{ position: [number, number, number]; rotation?: [number, number, number] }> = ({
+  position,
+  rotation = [0, 0, 0],
+}) => {
+  useBox(() => ({
+    type: "Static",
+    position,
+    rotation,
+    args: [30, 10, 1], // width, height, depth thickness of the wall
+  }));
+
+  return (
+    <mesh position={position} rotation={rotation}>
+      <boxGeometry args={[30, 10, 1]} />
+      <meshStandardMaterial color="#cccccc" />
+    </mesh>
+  );
+};
+
+export { Floor, Wall };

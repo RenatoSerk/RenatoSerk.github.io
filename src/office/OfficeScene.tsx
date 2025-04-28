@@ -9,7 +9,7 @@ export const OfficeScene: React.FC = () => {
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 20, 10]} intensity={5} />
 
-      <Physics>
+      <Physics gravity={[0, -80, 0]}>
         <Player />
         <Floor />
         <Wall position={[0, 5, -15]} />
