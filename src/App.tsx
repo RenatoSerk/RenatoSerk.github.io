@@ -1,24 +1,14 @@
-import { useEffect, useState } from "react";
-import LandingPage from "./landingPage/LandingPage";
-import Office from "./office/Office";
+import { Canvas } from "@react-three/fiber";
+import SceneManager from "./SceneManager";
 
 function App() {
-  const [showLanding, setShowLanding] = useState(true);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() === "z") {
-        setShowLanding(prev => !prev);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
-      {showLanding ? <LandingPage /> : <Office />}
+      <Canvas style={{ background: "black" }}>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 10]} intensity={1.5} />
+        <SceneManager />
+      </Canvas>
     </div>
   );
 }
