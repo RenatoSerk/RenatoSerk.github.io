@@ -4,7 +4,7 @@ import * as THREE from "three";
 import EarthModel from "./ObJectModels";
 
 const LandingScene: React.FC = () => {
-  const { camera } = useThree(); // 🔥 Correct way to get camera
+  const { camera } = useThree();
   const earthRef = useRef<THREE.Group>(null!);
   const isDragging = useRef(false);
   const lastMouse = useRef<THREE.Vector2>(new THREE.Vector2());
@@ -23,7 +23,7 @@ const LandingScene: React.FC = () => {
         -(e.clientY / window.innerHeight) * 2 + 1
       );
 
-      raycaster.setFromCamera(mouse, camera); // ✅ use correct camera
+      raycaster.setFromCamera(mouse, camera);
 
       const intersects = raycaster.intersectObject(earthRef.current, true);
       if (intersects.length > 0) {
@@ -56,7 +56,7 @@ const LandingScene: React.FC = () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [camera]); // Important: camera dependency!
+  }, [camera]);
 
   useFrame(() => {
     const earth = earthRef.current;
