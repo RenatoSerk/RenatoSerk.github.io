@@ -2,8 +2,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useSphere } from "@react-three/cannon";
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
-import { usePlayerMovement } from "../hooks/usePlayerMovement";
-import { useCameraControls } from "../hooks/useCameraControls";
+import { usePlayerMovement } from "./hooks/usePlayerMovement";
+import { useCameraControls } from "./hooks/useCameraControls";
 
 const Player: React.FC = () => {
   const { camera, scene } = useThree();
