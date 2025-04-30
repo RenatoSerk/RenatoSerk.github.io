@@ -6,7 +6,7 @@ const sensitivity = 0.002;
 const smoothness = 0.1;
 const pitchLimit = Math.PI / 2 - 0.1;
 
-export const useCameraControls = (camera: THREE.Camera, pivot: React.MutableRefObject<THREE.Object3D>) => {
+export const useCameraControls = (camera: THREE.Camera, pivot: React.RefObject<THREE.Object3D>) => {
   const pitch = useRef(0);
   const yaw = useRef(0);
   const currentRotation = useRef({ yaw: 0, pitch: 0 });
