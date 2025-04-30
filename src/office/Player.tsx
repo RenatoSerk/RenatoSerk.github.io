@@ -22,8 +22,17 @@ const Player: React.FC = () => {
     pivot.current.add(camera);
     scene.add(pivot.current);
     camera.position.set(0, 4, 0);
+  
+    return () => {
+      pivot.current.remove(camera); // Detach camera
+      scene.remove(pivot.current);  // Clean up scene
+      camera.rotation.set(0, 0, 0); // Reset rotation
+      camera.position.set(0, 2, 5); // Optional default
+    };
   }, [camera, scene]);
 
+
+  
   useFrame(() => {
     // Move the pivot to match player position
     if (playerBodyRef.current) {
