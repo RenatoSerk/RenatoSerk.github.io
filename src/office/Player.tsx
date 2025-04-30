@@ -19,15 +19,17 @@ const Player: React.FC = () => {
   useCameraControls(camera, pivot);
 
   useEffect(() => {
-    pivot.current.add(camera);
-    scene.add(pivot.current);
+    const pivotObject = pivot.current;
+    pivotObject.add(camera);
+    scene.add(pivotObject);
     camera.position.set(0, 4, 0);
-  
+
     return () => {
-      pivot.current.remove(camera); // Detach camera
-      scene.remove(pivot.current);  // Clean up scene
-      camera.rotation.set(0, 0, 0); // Reset rotation
-      camera.position.set(0, 2, 5); // Optional default
+      document.exitPointerLock();
+      pivotObject.remove(camera);
+      scene.remove(pivotObject);
+      camera.rotation.set(0, 0, 0);
+      camera.position.set(0, 2, 5);
     };
   }, [camera, scene]);
 
