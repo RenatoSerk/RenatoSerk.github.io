@@ -20,9 +20,7 @@ const App: React.FC = () => {
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <HtmlManager showLanding={showLanding} />
-      <Canvas style={{ background: "rgb(237, 226, 213)" }} >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 10]} intensity={1.5} />
+      <Canvas style={{ background: "rgb(237, 226, 213)" }} shadows >
         <SceneManager showLanding={showLanding} />
       </Canvas>
     </div>

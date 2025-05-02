@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import EarthModel from './ObJectModels';
 import { useEarthRotation } from './hooks/useEarthRotation';
 import { useThree } from '@react-three/fiber';
+import EarthModel from './ObJectModels';
 
 const LandingScene: React.FC = () => {
   const earthRef = useRef<THREE.Group>(null!);
@@ -17,9 +17,12 @@ const LandingScene: React.FC = () => {
   }, );
 
   return (
-    <group ref={earthRef} position={[4, 2, -6]}>
-      <EarthModel scale={4} position={[0, -4.3, 0]} />
-    </group>
+    <>
+      <directionalLight position={[3, 2, 10]} intensity={1.5}/>
+      <group ref={earthRef} position={[4, 2, -6]} scale={5}>
+        <EarthModel/>
+      </group>
+    </>
   );
 };
 
