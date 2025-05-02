@@ -37,8 +37,7 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>) {
       const deltaY = e.clientY - lastMouse.current.y;
       lastMouse.current.set(e.clientX, e.clientY);
 
-      rotationVelocity.current.x = deltaY * 0.005;
-      rotationVelocity.current.y = deltaX * 0.005;
+      rotationVelocity.current.set(deltaY * 0.005, deltaX * 0.005);
     };
 
     const handlePointerDown = (e: PointerEvent) => {
@@ -48,10 +47,11 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>) {
       );
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObject(earthRef.current!, true);
-
+    
       if (intersects.length > 0) {
         isDragging.current = true;
         lastMouse.current.set(e.clientX, e.clientY);
+        rotationVelocity.current.set(0, 0);
         document.body.style.cursor = 'grabbing';
       }
     };
@@ -77,15 +77,19 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>) {
   useFrame(() => {
     const earth = earthRef.current;
     if (!earth) return;
-
+  
     if (isDragging.current) {
       earth.rotation.x += rotationVelocity.current.x;
       earth.rotation.y += rotationVelocity.current.y;
+  
+      rotationVelocity.current.set(0, 0);
     } else if (rotationVelocity.current.lengthSq() > 0.00001) {
+      // Apply momentum after release
       earth.rotation.x += rotationVelocity.current.x;
       earth.rotation.y += rotationVelocity.current.y;
       rotationVelocity.current.multiplyScalar(DAMPING);
     } else {
+      // Idle behavior when no drag and no motion
       earth.rotation.x += (-earth.rotation.x) * UPRIGHT_RESTORATION_SPEED;
       earth.rotation.y += -0.003;
     }
