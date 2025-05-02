@@ -1,19 +1,24 @@
-import { useRef } from 'react'
-import * as THREE from 'three'
-import { ThreeElements } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
+import { Outlines, useGLTF } from '@react-three/drei'
+import * as THREE from 'three';
 
-function EarthModel(props: ThreeElements['mesh']) {
-  const { scene } = useGLTF('/low_poly_planet_earth.glb');
-  const meshRef = useRef<THREE.Object3D>(null!);
+function EarthModel() {
+  const { nodes, materials } = useGLTF('/poly_earth_02.glb');
+
+  // Create cell shaded material from the original material
+  const planetMaterial = materials['Planet'] as THREE.MeshStandardMaterial;
+  const toonMaterial = new THREE.MeshToonMaterial({
+    color: planetMaterial.color,
+    map: planetMaterial.map,
+  });
 
   return (
-    <primitive
-      ref={meshRef}
-      object={scene}
-      {...props}
-    />
-  )
+    <mesh
+      geometry={(nodes.polyEarth as THREE.Mesh).geometry}
+      material={toonMaterial}
+    >
+      <Outlines thickness={1.5} color={'black'} />
+    </mesh>
+  );
 }
 
-export default EarthModel
+export default EarthModel;
