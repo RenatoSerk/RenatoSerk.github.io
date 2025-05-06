@@ -6,7 +6,7 @@ const HTMLContent: React.FC = () => {
       {/* Top Bar */}
       <div className="md:absolute top-0 left-0 w-full flex justify-between items-center py-4 px-15">
         <button className="rounded-lg bg-secondary hover:animate-wiggle-more hover:animate-infinite">
-          <img src="/public/R_200x200.png" alt="Logo" className="w-10 h-10" />
+          <img src="R_200x200.png" alt="Logo" className="w-10 h-10" />
         </button>
         <div className="flex gap-4">
           <button className="rounded-lg p-1 py-1 bg-secondary hover:bg-gray-400 active:bg-gray-300">
