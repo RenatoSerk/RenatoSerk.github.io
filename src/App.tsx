@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import './styles/index.css';
 import SceneManager from './SceneManager';
-import HtmlManager from './HTMLManager';
 import CustomCursor from './CustomCursor';
+import HTMLContent from './HTMLContent';
 
 const App: React.FC = () => {
   const [showLanding, setShowLanding] = useState(true);
@@ -11,7 +11,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'z') {
-        setShowLanding(prev => !prev);
+        setShowLanding((prev) => !prev);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -20,13 +20,18 @@ const App: React.FC = () => {
 
   return (
     <>
-      <CustomCursor />
-      <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      <HtmlManager showLanding={showLanding} />
-      <Canvas style={{ background: "rgb(237, 226, 213)" }} shadows >
+      <Canvas id="threejs-canvas" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 0,
+        background: 'rgb(239, 232, 220)'
+
+      }}>
         <SceneManager showLanding={showLanding} />
       </Canvas>
-    </div>
+      <CustomCursor />
+      <HTMLContent />
     </>
   );
 };

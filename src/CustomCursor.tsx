@@ -1,15 +1,18 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useCursorStore } from "./stores/useCursorStore";
+
+const HOVERING_CURSOR_SIZE = 25;
+const DEFAULT_CURSOR_SIZE = 15;
 
 const CustomCursor: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const { isHovering, setIsHovering } = useCursorStore.getState();
+
   const checkHovering = React.useCallback((e: MouseEvent) => {
     const target = e.target as HTMLElement;
     const hoveringElement = target.closest("a, button, [role='button'], input, textarea, select");
     if (isHovering !== !!hoveringElement) setIsHovering(!!hoveringElement);
   }, [isHovering, setIsHovering]);
-
 
   useEffect(() => {
     const move = (e: MouseEvent) => {
@@ -25,38 +28,24 @@ const CustomCursor: React.FC = () => {
     };
   }, [setIsHovering, checkHovering]);
 
-  const cursorStyles: React.CSSProperties = useMemo(() => {
-    const size = isHovering ? 20 : 10;
-    return {
-      pointerEvents: "none",
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: size,
-      height: size,
-      transition: "transform 0.1s ease-out, width 0.4s ease-out, height 0.4s ease-out",
-      zIndex: 9999,
-      mixBlendMode: isHovering ? "difference" : "normal",
-    };
-  }, [isHovering]);
+  const cursorBlendMode = isHovering ? "mix-blend-difference" : "mix-blend-normal";
+  const innerBorder = isHovering ? "border-transparent" : "border-orange-500";
+  const innerBg = isHovering ? "bg-white" : "bg-transparent";
 
-  const innerStyles = useMemo(() => ({
-    width: "100%",
-    height: "100%",
-    borderRadius: "50%",
-    backgroundColor: isHovering ? "white" : "transparent",
-    border: isHovering ? "6px solid transparent" : "6px solid orange",
-    transition: "all 0.2s ease-out",
-  }), [isHovering]);
+  const cursorSize = isHovering ? HOVERING_CURSOR_SIZE : DEFAULT_CURSOR_SIZE;
 
   return (
     <div
+      className={`fixed pointer-events-none z-[9999] transition-transform duration-200 ease-out ${cursorBlendMode}`}
       style={{
-        ...cursorStyles,
-        transform: `translate(${position.x - (cursorStyles.width as number)}px, ${position.y - (cursorStyles.height as number)}px)`,
+        transform: `translate(${position.x - cursorSize / 2}px, ${position.y - cursorSize / 2}px)`,
+        width: `${cursorSize}px`,
+        height: `${cursorSize}px`,
       }}
     >
-      <div style={innerStyles} />
+      <div
+        className={`w-full h-full rounded-full border-4 transition-all duration-500 ease-out ${innerBorder} ${innerBg}`}
+      />
     </div>
   );
 };

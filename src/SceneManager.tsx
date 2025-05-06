@@ -1,4 +1,3 @@
-// SceneManager.tsx
 import LandingScene from "./landing/LandingScene";
 import OfficeScene from "./office/OfficeScene";
 
