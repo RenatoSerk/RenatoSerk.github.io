@@ -26,7 +26,6 @@ const App: React.FC = () => {
         left: 0,
         zIndex: 0,
         background: 'rgb(239, 232, 220)'
-
       }}>
         <SceneManager showLanding={showLanding} />
       </Canvas>
