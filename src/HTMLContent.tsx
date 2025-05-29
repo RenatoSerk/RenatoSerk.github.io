@@ -18,10 +18,19 @@ const HTMLContent: React.FC = () => {
     isTransitioning.current = true;
     lenisRef.current?.stop();
 
-    landingRef.current.style.transition = 'top 1s';
-    landingRef.current.style.top = scrollDown ? '-100vh' : '0';
-    scrollContainerRef.current.style.transition = 'top 1s';
-    scrollContainerRef.current.style.top = scrollDown ? '0' : '100vh';
+    // Delay the transition to allow for canvas animation
+    if (scrollDown) {
+      setTimeout(() => {
+        if (scrollContainerRef.current && landingRef.current){
+          landingRef.current.style.top = '-100vh';
+          scrollContainerRef.current.style.top = '0';
+        }
+      }, 2000);
+    }
+    else {
+      landingRef.current.style.top = '0';
+      scrollContainerRef.current.style.top = '100vh';
+    }
 
     const handleTransitionEnd = () => {
       isTransitioning.current = false;
@@ -101,7 +110,7 @@ const HTMLContent: React.FC = () => {
           </nav>
         </header>
 
-        <section ref={landingRef} id='landing' className="h-screen w-full flex flex-col md:flex-row absolute top-0">
+        <section ref={landingRef} id='landing' className="h-screen w-full flex flex-col md:flex-row absolute top-0 transition-top duration-1000">
           <div className="flex justify-center items-center p-6 md:w-1/2">
             <div className="flex flex-col space-y-2 select-none">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">Hi, my</h1>
@@ -112,7 +121,7 @@ const HTMLContent: React.FC = () => {
           <div className="flex-1" />
         </section>
 
-        <main ref={scrollContainerRef} className="min-h-screen absolute w-full top-full">
+        <main ref={scrollContainerRef} className="min-h-screen absolute w-full top-full transition-top duration-1000">
           <div id='scrollable-content' className="w-full">
             <section id='about' className="min-h-screen w-full flex flex-col md:flex-row">
               <div className="flex justify-center items-center p-6 md:w-1/2">
