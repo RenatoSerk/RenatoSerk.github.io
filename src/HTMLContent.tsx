@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/Observer';
@@ -7,42 +7,40 @@ import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger, Observer);
 
 const HTMLContent: React.FC = () => {
+  const lenisRef = useRef<Lenis | null>(null);
+  const fullContent = useRef<HTMLDivElement | null>(null);
   const landingRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isTransitioning = useRef(false);
-  const lenisRef = useRef<Lenis | null>(null);
 
   const scrollContentInOutView = useCallback((scrollDown: boolean) => {
-    const contentWrapper = document.getElementById("smooth-content");
-    if (!contentWrapper) return;
+    if (!scrollContainerRef.current || !landingRef.current) return;
+    isTransitioning.current = true;
 
-    const yTarget = scrollDown ? -window.innerHeight : 0;
+    landingRef.current.style.transition = 'top 1s';
+    landingRef.current.style.top = scrollDown ? '-100vh' : '0';
+    scrollContainerRef.current.style.transition = 'top 1s';
+    scrollContainerRef.current.style.top = scrollDown ? '0' : '100vh';
 
-    gsap.to(contentWrapper, {
-      y: yTarget,
-      duration: 1,
-      ease: "power2.inOut",
-      onStart: () => {
-        isTransitioning.current = true;
-      },
-      onComplete: () => {
-        isTransitioning.current = false;
-      },
-    });
+    const handleTransitionEnd = () => {
+      isTransitioning.current = false;
+      if (scrollDown) lenisRef.current?.start();
+      else lenisRef.current?.stop();
+      landingRef.current?.removeEventListener('transitionend', handleTransitionEnd);
+    };
+
+    landingRef.current.addEventListener('transitionend', handleTransitionEnd);
   }, []);
 
   useEffect(() => {
-    const wrapper = scrollContainerRef.current;
-    const content = wrapper?.querySelector("#scroll-container") as HTMLElement;
-
-    if (!wrapper || !content) return;
+    if (!fullContent.current) return;
 
     const lenis = new Lenis({
-      wrapper,
-      content
+      wrapper: fullContent.current,
+      content: fullContent.current.firstElementChild as HTMLElement,
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
     });
-
-    lenisRef.current = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -50,8 +48,9 @@ const HTMLContent: React.FC = () => {
     }
 
     requestAnimationFrame(raf);
+    lenisRef.current = lenis;
 
-    const maxScroll = window.innerHeight * 2;
+    lenis.stop();
 
     Observer.create({
       type: "wheel,touch,pointer",
@@ -71,23 +70,14 @@ const HTMLContent: React.FC = () => {
       },
     });
 
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (window.scrollY >= maxScroll && ['ArrowDown', 'PageDown', 'Space'].includes(e.code)) {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeydown);
-
     return () => {
       lenis.destroy();
-      window.removeEventListener('keydown', handleKeydown);
     };
-  }, [scrollContentInOutView]);
+  }, []);
 
   return (
-    <div ref={scrollContainerRef} id="smooth-wrapper" className="relative z-10 fixed top-0 left-0 right-0 bottom-0 overflow-hidden">
-      <div id="smooth-content">
+    <div ref={fullContent} id="content-container" className="relative z-10 w-full h-full overflow-hidden">
+      <div>
         <header className="fixed top-0 left-0 w-full flex justify-between items-center py-4 px-15 z-50 pointer-events-auto">
           <button className="rounded-lg bg-secondary hover:animate-wiggle-more hover:animate-infinite">
             <img src="R_200x200.png" alt="Logo" className="w-10 h-10" />
@@ -106,19 +96,19 @@ const HTMLContent: React.FC = () => {
           </nav>
         </header>
 
-        <div id="scroll-container">
-          <section ref={landingRef} id='landing' className="h-screen w-full flex flex-col md:flex-row">
-            <div className="flex justify-center items-center p-6 md:w-1/2">
-              <div className="flex flex-col space-y-2 select-none">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">Hi, my</h1>
-                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">name is Renato.</h2>
-                <p className="text-sm sm:text-base md:text-lg opacity-80 font-normal">I'm a Full Stack Developer from Canada.</p>
-              </div>
+        <section ref={landingRef} id='landing' className="h-screen w-full flex flex-col md:flex-row absolute top-0">
+          <div className="flex justify-center items-center p-6 md:w-1/2">
+            <div className="flex flex-col space-y-2 select-none">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">Hi, my</h1>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">name is Renato.</h2>
+              <p className="text-sm sm:text-base md:text-lg opacity-80 font-normal">I'm a Full Stack Developer from Canada.</p>
             </div>
-            <div className="flex-1" />
-          </section>
+          </div>
+          <div className="flex-1" />
+        </section>
 
-          <main id="scroll-container" className="min-h-screen relative">
+        <main ref={scrollContainerRef} className="min-h-screen absolute w-full top-full">
+          <div id='scrollable-content' className="w-full">
             <section id='about' className="min-h-screen w-full flex flex-col md:flex-row">
               <div className="flex justify-center items-center p-6 md:w-1/2">
                 <div className="flex flex-col space-y-2 select-none">
@@ -145,8 +135,8 @@ const HTMLContent: React.FC = () => {
             <footer className="text-center py-2 select-none">
               Renato Serkhanian - 2025
             </footer>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );
