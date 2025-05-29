@@ -14,8 +14,9 @@ const HTMLContent: React.FC = () => {
   const isTransitioning = useRef(false);
 
   const scrollContentInOutView = useCallback((scrollDown: boolean) => {
-    if (!scrollContainerRef.current || !landingRef.current) return;
+    if (!scrollContainerRef.current || !landingRef.current || isTransitioning.current == true) return;
     isTransitioning.current = true;
+    lenisRef.current?.stop();
 
     landingRef.current.style.transition = 'top 1s';
     landingRef.current.style.top = scrollDown ? '-100vh' : '0';
@@ -24,8 +25,13 @@ const HTMLContent: React.FC = () => {
 
     const handleTransitionEnd = () => {
       isTransitioning.current = false;
-      if (scrollDown) lenisRef.current?.start();
-      else lenisRef.current?.stop();
+      if (lenisRef.current){
+        if (scrollDown){
+          lenisRef.current.resize();
+          lenisRef.current.start();
+        }
+        else lenisRef.current.stop();
+      }
       landingRef.current?.removeEventListener('transitionend', handleTransitionEnd);
     };
 
@@ -38,8 +44,7 @@ const HTMLContent: React.FC = () => {
     const lenis = new Lenis({
       wrapper: fullContent.current,
       content: fullContent.current.firstElementChild as HTMLElement,
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+      duration: 1.2
     });
 
     function raf(time: number) {
