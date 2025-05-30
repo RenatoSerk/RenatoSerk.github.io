@@ -146,6 +146,16 @@ const HTMLContent: React.FC = () => {
               <div className="flex-1" />
             </section>
 
+            <section id='contact-me' className="min-h-screen w-full flex flex-col md:flex-row">
+              <div className="flex justify-center items-center p-6 md:w-1/2">
+                <div className="flex flex-col space-y-2 select-none">
+                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold">Send me a message!</h2>
+                  <p className="text-sm sm:text-base md:text-lg opacity-80 font-normal">Let me know what's going on</p>
+                </div>
+              </div>
+              <div className="flex-1" />
+            </section>
+
             <footer className="text-center py-2 select-none">
               Renato Serkhanian - 2025
             </footer>
