@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Observer } from 'gsap/Observer';
 import Lenis from 'lenis';
+import { useCursorStore } from './stores/useCursorStore';
 
 gsap.registerPlugin(ScrollTrigger, Observer);
 
@@ -12,6 +13,7 @@ const HTMLContent: React.FC = () => {
   const landingRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isTransitioning = useRef(false);
+  const isDragging = useCursorStore((state) => state.isDragging);
 
   const scrollContentInOutView = useCallback((scrollDown: boolean) => {
     if (!scrollContainerRef.current || !landingRef.current || isTransitioning.current == true) return;
@@ -68,7 +70,9 @@ const HTMLContent: React.FC = () => {
 
     Observer.create({
       type: "wheel,touch,pointer",
-      onDown: () => {
+      onDown: (e) => {
+        if (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove") return;
+        
         const rect = landingRef.current?.getBoundingClientRect();
         if (rect && Math.abs(rect.top) < 10 && !isTransitioning.current) {
           scrollContentInOutView(true);

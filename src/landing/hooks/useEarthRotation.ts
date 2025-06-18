@@ -9,11 +9,10 @@ const UPRIGHT_RESTORATION_SPEED = 0.02;
 export function useEarthRotation(earthRef: React.RefObject<THREE.Group>, glowRef: React.RefObject<THREE.Mesh>) {
   const { camera } = useThree();
 
-  const isDragging = useRef(false);
   const lastMouse = useRef<THREE.Vector2>(new THREE.Vector2());
   const rotationVelocity = useRef<THREE.Vector2>(new THREE.Vector2());
   const prevIsHovering = useRef(false); // Store the previous isHovering value
-  const { setIsHovering } = useCursorStore.getState();
+  const { setIsHovering, isDragging, setIsDragging } = useCursorStore();
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
     const raycaster = new THREE.Raycaster();
@@ -35,14 +34,14 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>, glowRef
       }
     }
 
-    if (!isDragging.current) return;
+    if (!isDragging) return;
 
     const deltaX = e.clientX - lastMouse.current.x;
     const deltaY = e.clientY - lastMouse.current.y;
     lastMouse.current.set(e.clientX, e.clientY);
 
     rotationVelocity.current.set(deltaY * 0.005, deltaX * 0.005);
-  }, [camera, earthRef, glowRef, setIsHovering]);
+  }, [camera, earthRef, glowRef, setIsHovering, isDragging]);
 
   useEffect(() => {
     const raycaster = new THREE.Raycaster();
@@ -56,16 +55,13 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>, glowRef
       const intersects = raycaster.intersectObject(earthRef.current!, true);
 
       if (intersects.length > 0) {
-        isDragging.current = true;
+        setIsDragging(true);
         lastMouse.current.set(e.clientX, e.clientY);
-        rotationVelocity.current.set(0, 0);
       }
     };
 
     const handlePointerUp = () => {
-      if (isDragging.current) {
-        isDragging.current = false;
-      }
+      setIsDragging(false);
     };
 
     window.addEventListener('pointerdown', handlePointerDown);
@@ -77,17 +73,16 @@ export function useEarthRotation(earthRef: React.RefObject<THREE.Group>, glowRef
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
-  }, [camera, earthRef, handlePointerMove]);
+  }, [camera, earthRef, handlePointerMove, setIsDragging]);
 
   useFrame(() => {
     const earth = earthRef.current;
     if (!earth) return;
 
-    if (isDragging.current) {
+    if (isDragging) {
       earth.rotation.x += rotationVelocity.current.x;
       earth.rotation.y += rotationVelocity.current.y;
 
-      rotationVelocity.current.set(0, 0);
     } else if (rotationVelocity.current.lengthSq() > 0.00001) {
       // Apply momentum after release
       earth.rotation.x += rotationVelocity.current.x;
