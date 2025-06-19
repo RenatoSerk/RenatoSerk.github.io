@@ -71,15 +71,17 @@ const HTMLContent: React.FC = () => {
     Observer.create({
       type: "wheel,touch,pointer",
       onDown: (e) => {
-        if (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove") return;
-        
+        if (isDragging && (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove")) return;
+
         const rect = landingRef.current?.getBoundingClientRect();
         if (rect && Math.abs(rect.top) < 10 && !isTransitioning.current) {
           scrollContentInOutView(true);
           return false;
         }
       },
-      onUp: () => {
+      onUp: (e) => {
+        if (isDragging && (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove")) return;
+
         const rect = scrollContainerRef.current?.getBoundingClientRect();
         if (rect && Math.abs(rect.top) < 10 && !isTransitioning.current) {
           scrollContentInOutView(false);
