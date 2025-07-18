@@ -14,6 +14,11 @@ const HTMLContent: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isTransitioning = useRef(false);
   const isDragging = useCursorStore((state) => state.isDragging);
+  const isDraggingRef = useRef(isDragging); // Fix for var not updating unless it is a ref
+
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
 
   const scrollContentInOutView = useCallback((scrollDown: boolean) => {
     if (!scrollContainerRef.current || !landingRef.current || isTransitioning.current == true) return;
@@ -71,7 +76,7 @@ const HTMLContent: React.FC = () => {
     Observer.create({
       type: "wheel,touch,pointer",
       onDown: (e) => {
-        if (isDragging && (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove")) return;
+        if (isDraggingRef.current) return;
 
         const rect = landingRef.current?.getBoundingClientRect();
         if (rect && Math.abs(rect.top) < 10 && !isTransitioning.current) {
@@ -80,7 +85,7 @@ const HTMLContent: React.FC = () => {
         }
       },
       onUp: (e) => {
-        if (isDragging && (e.event.type === "pointerup" || e.event.type === "pointermove" || e.event.type === "touchmove")) return;
+        if (isDraggingRef.current) return;
 
         const rect = scrollContainerRef.current?.getBoundingClientRect();
         if (rect && Math.abs(rect.top) < 10 && !isTransitioning.current) {
