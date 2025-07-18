@@ -1,23 +1,34 @@
-import { Outlines, useGLTF } from '@react-three/drei'
 import * as THREE from 'three';
+import { useEffect, useState } from 'react';
+import { GLTFLoader, type GLTF } from 'three-stdlib';
 
 function EarthModel() {
-  const { nodes, materials } = useGLTF('/poly_earth_02.glb');
+  const [scene, setScene] = useState<THREE.Group | null>(null);
 
-  // Create cell shaded material from the original material
-  const planetMaterial = materials['Planet'] as THREE.MeshStandardMaterial;
-  const toonMaterial = new THREE.MeshToonMaterial({
-    color: planetMaterial.color,
-    map: planetMaterial.map,
-  });
+  useEffect(() => {
+    const loader = new GLTFLoader();
+    loader.load('/globeFlag.glb', (gltf: GLTF) => {
+      // Traverse and update materials
+      gltf.scene.traverse((obj) => {
+        if ((obj as THREE.Mesh).isMesh) {
+          const mesh = obj as THREE.Mesh;
+          const origMat = mesh.material as THREE.MeshStandardMaterial;
+          mesh.material = new THREE.MeshToonMaterial({
+            color: origMat.color,
+            map: origMat.map,
+            transparent: origMat.transparent,
+            opacity: origMat.opacity,
+          });
+        }
+      });
+      setScene(gltf.scene);
+    });
+  }, []);
+
+  if (!scene) return null;
 
   return (
-    <mesh
-      geometry={(nodes.polyEarth as THREE.Mesh).geometry}
-      material={toonMaterial}
-    >
-      <Outlines thickness={1.5} color={'black'} />
-    </mesh>
+    <primitive object={scene} />
   );
 }
 
