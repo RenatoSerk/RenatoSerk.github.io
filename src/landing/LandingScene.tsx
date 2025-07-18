@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useEarthRotation } from './hooks/useEarthRotation';
 import { useThree } from '@react-three/fiber';
-import EarthModel from './models/EarthModel';
+import { EarthModel } from './Models';
 
 const LandingScene: React.FC = () => {
   const earthRef = useRef<THREE.Group>(null!);
